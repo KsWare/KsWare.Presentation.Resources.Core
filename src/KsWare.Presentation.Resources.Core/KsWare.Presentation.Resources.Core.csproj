@@ -1,0 +1,66 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFrameworks>net462;net48;net6.0-windows;net8.0-windows</TargetFrameworks>
+    <UseWPF>true</UseWPF>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <Copyright>Copyright © 2002-2024 by KsWare. All rights reserved.</Copyright>
+    <Product>Presentation Framework</Product>
+    <Company>KsWare</Company>
+    <Authors>KsWare</Authors>
+    <Description>Core components for theme resources in KsWare Presentation Framework.</Description>
+    <LangVersion>8.0</LangVersion>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <PropertyGroup>
+    <AssemblyOriginatorKeyFile>Properties\KsWare.Presentation.snk</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
+    <SignAssembly>true</SignAssembly>
+    <GenerateDocumentationFile>True</GenerateDocumentationFile>
+    <PackageIcon>icon.png</PackageIcon>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Debug'">
+    <NoWarn>1701;1702;CS1591</NoWarn>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)'=='Release'">
+    <NoWarn>1701;1702</NoWarn>
+  </PropertyGroup>
+  <ItemGroup>
+    <None Remove="KsWare.Presentation.Resources.Core.csproj.DotSettings" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\ChangeLog.md" Link="Properties\ChangeLog.md" />
+    <None Include="..\..\icon.png" Link="Properties\icon.png">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\LICENSE.txt" Link="Properties\LICENSE.txt">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+    <None Include="..\..\README.md" Link="Properties\README.md">
+      <Pack>True</Pack>
+      <PackagePath>\</PackagePath>
+    </None>
+  </ItemGroup>
+  <ItemGroup Condition="'$(TargetFramework)' == 'net462'">
+    <PackageReference Include="System.ValueTuple" Version="4.5.0" />
+  </ItemGroup>
+
+	<PropertyGroup>
+		<LocalNugetDirectory>D:\Develop\Local\Nuget</LocalNugetDirectory>
+	</PropertyGroup>	
+	<Target Name="CopyNuGetPackages" AfterTargets="Pack" Condition="Exists('$(LocalNugetDirectory)')">
+		<ItemGroup>
+			<NuGetPackages Include="$(OutputPath)\*.nupkg" />
+		</ItemGroup>
+		<Copy SourceFiles="@(NuGetPackages)" DestinationFolder="$(LocalNugetDirectory)" SkipUnchangedFiles="true" />
+		<Message Text="NuGet packages copied to $(LocalNugetDirectory)." Importance="High" />
+	</Target>
+	<Target Name="NotifyNoCopy" AfterTargets="Pack" Condition="!Exists('$(LocalNugetDirectory)')">
+		<Message Text="The directory $(LocalNugetDirectory) does not exist. Copy NuGet packages skipped." Importance="High" />
+	</Target>
+	
+</Project>

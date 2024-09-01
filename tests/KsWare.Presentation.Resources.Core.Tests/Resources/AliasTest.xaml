@@ -1,0 +1,17 @@
+﻿<ResourceDictionaryEx
+	xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+	xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+	xmlns:themes="http://ns.ksware.de/Presentation/Themes/Core">
+	<ResourceDictionary.MergedDictionaries>
+		<ResourceDictionaryEx>
+			<SolidColorBrush x:Key="BrushFFFFFF" Color="#FFFFFF"/>
+		</ResourceDictionaryEx>
+	</ResourceDictionary.MergedDictionaries>
+
+	<Alias x:Key="WhiteBrush" ResourceKey="BrushFFFFFF"/>
+
+	<TraceInfoExtension x:Key="TraceInfoExtension"/>
+
+	<!-- <Button x:Key="ButtonInstance" x:Shared="False" Background="{StaticResource WhiteBrush}" Content="{StaticResource TraceInfoExtension}"/> -->
+
+</ResourceDictionaryEx>

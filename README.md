@@ -1,0 +1,1 @@
+﻿# KsWare.Presentation.Resources.Core
