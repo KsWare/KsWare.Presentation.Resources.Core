@@ -3,7 +3,7 @@ using System.IO;
 using System.Text;
 using System.Windows.Markup;
 
-namespace KsWare.Presentation.Themes.Core {
+namespace KsWare.Presentation.Resources.Core {
 
 	// {TraceInfo}
 	// {TraceInfo Name

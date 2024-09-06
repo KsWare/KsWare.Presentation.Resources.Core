@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace KsWare.Presentation.Themes.Core {
+namespace KsWare.Presentation.Resources.Core {
 
 	public class InfoSetter : Setter {
 

@@ -4,7 +4,7 @@ using System.ComponentModel;
 using System.Linq;
 using System.Windows;
 
-namespace KsWare.Presentation.Themes.Core {
+namespace KsWare.Presentation.Resources.Core {
 
 	/// <summary>
 	/// A ResourceDictionary that caches and reuses resources.

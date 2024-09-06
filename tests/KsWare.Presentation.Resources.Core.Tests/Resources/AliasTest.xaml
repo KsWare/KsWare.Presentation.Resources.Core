@@ -8,8 +8,6 @@
 		</ResourceDictionaryEx>
 	</ResourceDictionary.MergedDictionaries>
 
-	<Alias x:Key="WhiteBrush" ResourceKey="BrushFFFFFF"/>
-
 	<TraceInfoExtension x:Key="TraceInfoExtension"/>
 
 	<!-- <Button x:Key="ButtonInstance" x:Shared="False" Background="{StaticResource WhiteBrush}" Content="{StaticResource TraceInfoExtension}"/> -->

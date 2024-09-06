@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Windows.Markup;
 
-namespace KsWare.Presentation.Themes.Core {
+namespace KsWare.Presentation.Resources.Core {
 
 	public class KeyExtension : StaticExtension{
 
-		public static object LastKey;
+		public static object? LastKey;
 
 		private readonly object _key;
 

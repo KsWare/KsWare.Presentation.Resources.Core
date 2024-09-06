@@ -1,4 +1,4 @@
 ﻿
-namespace KsWare.Presentation.Themes.Core {
+namespace KsWare.Presentation.Resources.Core {
 	public class MergedResourceDictionary : ResourceDictionaryEx { }
 }

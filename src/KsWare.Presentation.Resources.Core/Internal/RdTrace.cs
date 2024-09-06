@@ -2,7 +2,7 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace KsWare.Presentation.Themes.Core {
+namespace KsWare.Presentation.Resources.Core {
 
 	internal class RdTrace {
 

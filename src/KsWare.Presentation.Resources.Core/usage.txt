@@ -1,0 +1,25 @@
+	<Window.Resources>
+		<ResourceDictionary>
+			<ResourceDictionary.MergedDictionaries>
+				<ResourceDictionary>
+					<system:String x:Key="Workaround">avoid single key in resource dictionary</system:String>
+					<ResourceDictionary x:Key="Aero2Dark.Button.Overrides">
+						<SolidColorBrush x:Key="Aero2Dark.Button.Static.Background" Color="#4040FF"/>
+					</ResourceDictionary>
+				</ResourceDictionary>
+				<ThemeResourceDictionary Source="/KsWare.Presentation.Themes.Aero2Dark;component/Resources/Aero2Dark.NormalColor.xaml" EnableTrace="True"/>
+			</ResourceDictionary.MergedDictionaries>
+		</ResourceDictionary>
+	</Window.Resources>
+
+
+	ThemeLoader.Source="/KsWare.Presentation.Themes.Aero2Dark;component/Resources/Aero2Dark.NormalColor.xaml">
+	<Window.Resources>
+		<TextBlock x:Key="Workaround">avoid single ResourceDictionary in resources</TextBlock>
+		<ResourceDictionary x:Key="Aero2Dark.Button.Brushes.Overrides">
+			<SolidColorBrush x:Key="Aero2Dark.Button.Static.Background"    Color="#4040FF"/>
+		</ResourceDictionary>
+		<ResourceDictionary x:Key="Aero2Dark.ToggleButton.Brushes.Overrides">
+			<SolidColorBrush x:Key="Aero2Dark.ToggleButton.Static.Background"    Color="#4040FF"/>
+		</ResourceDictionary>
+	</Window.Resources>

@@ -7,12 +7,18 @@ using System.Windows.Automation;
 using System.Windows.Controls;
 using System.Windows.Media;
 
-namespace KsWare.Presentation.Themes.Core {
+namespace KsWare.Presentation.Resources.Core {
 
 	public class OverrideDefaultStylesResourceDictionary : ResourceDictionaryEx {
 
 		private Dictionary<Type,bool> _lazyBasedOn = new Dictionary<Type, bool>();
-		public string Prefix { get; set; }
+
+		/// <summary>
+		/// Base style key pattern. The star-char (*) will be replaced by type name.
+		/// </summary>
+		/// <example><c>MyTheme.*Style</c></example>
+		public string KeyPattern { get; set; } = "Theme.*Style";
+
 		private bool _deferred = false;
 
 		protected override void OnGettingValue(object key, ref object value, out bool canCache) {
@@ -26,8 +32,8 @@ namespace KsWare.Presentation.Themes.Core {
 		}
 
 		private void InitializeStyle(Style style) {
-			var baseStyleKey = $"{Prefix}{style.TargetType.Name}Style";
-			var baseStyle = (Style)TryFindResource(baseStyleKey, this);
+			var baseStyleKey = KeyPattern.Replace("*", style.TargetType.Name);
+			var baseStyle = (Style)TryFindResource(baseStyleKey, LogicalParent);
 			style.BasedOn = baseStyle;
 			Trace.Info($"initialize <Style TargetType=\"{style.TargetType.Name}\" BasedOn=\"{baseStyleKey}\"/>");
 		}
@@ -37,19 +43,12 @@ namespace KsWare.Presentation.Themes.Core {
 			base.EndInit();
 		}
 
-		protected override void OnAddParent(ResourceDictionary resourceDictionary) {
-			base.OnAddParent(resourceDictionary);
-		}
-
 		private void AddControlStyles(ResourceDictionaryEx parent) {
-			var controlTypes = typeof(Control).Assembly
+			var controlTypes = typeof(FrameworkElement).Assembly
 				.GetTypes()
-				.Where(t => t.IsSubclassOf(typeof(Control)) && !t.IsAbstract);
-
+				.Where(t => t.IsSubclassOf(typeof(FrameworkElement)) && !t.IsAbstract);
 			foreach (var controlType in controlTypes) {
-				var baseStyleKey = $"Aero2Dark.{controlType.Name}Style";
-//				var dic = new ResourceDictionary();
-//				current.MergedDictionaries.Add(dic);
+				var baseStyleKey = KeyPattern.Replace("*", controlType.Name);
 				var dic = this;
 
 				if (_deferred) {
@@ -57,7 +56,7 @@ namespace KsWare.Presentation.Themes.Core {
 					var style = new Style(controlType);
 					dic[controlType] = style;
 					_lazyBasedOn.Add(controlType, false);
-					Debug.WriteLine($"create <Style TargetType=\"{controlType.Name}\" lazy.BasedOn=\"{baseStyleKey}\"/>");
+					Debug.WriteLine($"create <Style TargetType=\"{controlType.Name}\" deferred.BasedOn=\"{baseStyleKey}\"/>");
 				}
 				else {
 					var baseStyle = (Style) TryFindResource(baseStyleKey, parent);

@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace KsWare.Presentation.Themes.Core.Tests;
+namespace KsWare.Presentation.Resources.Core.Tests;
 
 public class PlaceholderResourceDictionaryTests {
 

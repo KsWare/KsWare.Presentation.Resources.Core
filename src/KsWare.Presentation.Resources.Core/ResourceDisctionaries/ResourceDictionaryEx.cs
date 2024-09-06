@@ -9,7 +9,7 @@ using System.Windows.Markup;
 using System.Windows.Threading;
 using KsWare.Presentation.Core.Utils;
 
-namespace KsWare.Presentation.Themes.Core {
+namespace KsWare.Presentation.Resources.Core {
 
 	/// <summary>
 	/// Extended ResourceDictionary

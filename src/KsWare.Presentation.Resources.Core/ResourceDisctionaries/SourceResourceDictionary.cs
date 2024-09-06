@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace KsWare.Presentation.Themes.Core {
+namespace KsWare.Presentation.Resources.Core {
 
 	/// <summary>
 	/// SourceResourceDictionary is used as root element to define the XAML.

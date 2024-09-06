@@ -4,9 +4,9 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using static KsWare.Presentation.Themes.Core.AssemblyInfo;
+using static KsWare.Presentation.Resources.Core.AssemblyInfo;
 
-namespace KsWare.Presentation.Themes.Core.Tests;
+namespace KsWare.Presentation.Resources.Core.Tests;
 
 public class AssemblyInfoTests {
 

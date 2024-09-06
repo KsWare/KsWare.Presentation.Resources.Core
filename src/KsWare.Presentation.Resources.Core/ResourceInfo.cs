@@ -1,9 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.Windows;
 
-namespace KsWare.Presentation.Themes.Core {
+namespace KsWare.Presentation.Resources.Core {
 
 	public static class ResourceInfo {
+
+		
 
 		public static readonly DependencyProperty StyleLocationProperty = DependencyProperty.RegisterAttached(
 			"StyleLocation", typeof(string), typeof(ResourceInfo), new PropertyMetadata(default(string),OnStyleLocationChanged));

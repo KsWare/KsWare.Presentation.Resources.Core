@@ -1,7 +1,7 @@
 ﻿using System.Threading;
 using System.Windows;
 
-namespace KsWare.Presentation.Themes.Core.Tests;
+namespace KsWare.Presentation.Resources.Core.Tests;
 
 [SetUpFixture]
 public class WpfAppInitializer {
