@@ -34,11 +34,12 @@ namespace KsWare.Presentation.Resources.Core {
 		/// <returns>The found resource, or null if no resource with the provided key is found.</returns>
 		public object? TryFindResource(object resourceKey) => TryFindResource(resourceKey, this);
 
-		protected static object? TryFindResource(object key, ResourceDictionary resourceDictionary) {
-			if (resourceDictionary.Contains(key)) return resourceDictionary[key];
+		protected static object? TryFindResource(object key, ResourceDictionary resourceDictionary, bool skipRdWithSource = false, bool skipCurrentKeys = false) {
+			if (!skipCurrentKeys && resourceDictionary.Contains(key)) return resourceDictionary[key];
 			foreach (var mergedDict in resourceDictionary.MergedDictionaries.Reverse()) {
+				if(skipRdWithSource && mergedDict.Source!=null) continue;
 				var result = TryFindResource(key, mergedDict);
-				if (result!=null) return true;
+				if (result!=null) return result;
 			}
 			return null;
 		}

@@ -100,6 +100,10 @@ namespace KsWare.Presentation.Resources.Core {
 			base.EndInit();
 		}
 
+		protected override void OnGettingValue(object key, ref object value, out bool canCache) {
+			base.OnGettingValue(key, ref value, out canCache);
+		}
+
 		internal void AddTemporary(ResourceDictionary resourceDictionary) {
 			if (_tempMerged == null) _tempMerged = new ResourceDictionary();
 			_tempMerged.MergedDictionaries.Add(resourceDictionary);

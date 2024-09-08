@@ -49,7 +49,7 @@ namespace KsWare.Presentation.Resources.Core {
 //		}
 
 		[Conditional("DEBUG"),Conditional("TRACE")]
-		public void Info(string msg, params (string Name, object Value)[] optionalParams) {
+		public void Info(string msg, params (string Name, object? Value)[] optionalParams) {
 			var formattedMessage = new StringBuilder(msg);
 
 			foreach (var param in optionalParams) {

@@ -9,38 +9,12 @@ namespace KsWare.Presentation.Resources.Core {
 
 	public static class ThemeLoader {
 
+		private static Dictionary<string, Uri> s_themes = new Dictionary<string, Uri>();
+
 		private static EventHandler? s_initializeFnc;
 
 		public static readonly DependencyProperty SourceProperty = DependencyProperty.RegisterAttached(
 			"Source", typeof(Uri), typeof(ThemeLoader), new FrameworkPropertyMetadata(default(Uri),OnSourceChanged));
-
-		private static void OnSourceChanged2(DependencyObject d, DependencyPropertyChangedEventArgs e) {
-			if(!(d is FrameworkElement element)) return;
-			LookupResourceDictionary.s_lookupRoot=element;
-
-			// ReSharper disable once ComplexConditionExpression
-			s_initializeFnc = (s,_) => {
-				if (s != null) element.Initialized -= s_initializeFnc;
-				var insertPosition = 0;
-				if (e.OldValue is Uri oldUri) {
-					var oldDic = element.Resources.MergedDictionaries.FirstOrDefault(rd => rd.Source == oldUri);
-					if (oldDic!=null) {
-						insertPosition = element.Resources.MergedDictionaries.IndexOf(oldDic);
-						element.Resources.MergedDictionaries.Remove(oldDic);
-					}
-				}
-				if (e.NewValue is Uri newUri ) {
-					var trd = new ThemeResourceDictionary();
-					trd.BeginInit();
-					trd.Source = newUri;
-					trd.EndInit();
-					element.Resources.MergedDictionaries.Insert(insertPosition,trd);
-				}
-			};
-
-			if(!element.IsInitialized) element.Initialized += s_initializeFnc;
-			else s_initializeFnc(null, EventArgs.Empty);
-		}
 
 		private static void OnSourceChanged(DependencyObject d, DependencyPropertyChangedEventArgs e) {
 			if (!(d is FrameworkElement element)) return;
@@ -64,9 +38,10 @@ namespace KsWare.Presentation.Resources.Core {
 			element.Resources.MergedDictionaries.Insert(0,o);
 
 			if (newUri !=null ) {
+				if (!s_themes.TryGetValue(newUri.OriginalString, out var uri)) uri = newUri;
 				var trd = new ThemeResourceDictionary();
 				trd.BeginInit();
-				trd.Source = newUri;
+				trd.Source = uri;
 				trd.EndInit();
 				element.Resources.MergedDictionaries.Insert(1,trd);
 			}
@@ -95,18 +70,20 @@ namespace KsWare.Presentation.Resources.Core {
 				}
 			}
 		}
-
-
-		private static void lucky(object sender, EventArgs e) {
-			throw new NotImplementedException();
-		}
-
+		
 		public static void SetSource(FrameworkElement element, Uri value) {
 			element.SetValue(SourceProperty, value);
 		}
 
 		public static Uri GetSource(FrameworkElement element) {
 			return (Uri) element.GetValue(SourceProperty);
+		}
+
+		public static void RegisterTheme(string name, Uri uri) {
+			s_themes[name] = uri;
+		}
+		public static void RegisterTheme(string name, string uri) {
+			s_themes[name] = new Uri(uri, uri.StartsWith("pack:")?UriKind.Absolute : UriKind.Relative);
 		}
 
 	}

@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.ComponentModel;
 using System.IO;
 using System.Linq;
 using System.Windows;
@@ -15,21 +13,26 @@ namespace KsWare.Presentation.Resources.Core {
 	/// Extended ResourceDictionary
 	/// </summary>
 	[UsableDuringInitialization(true)]
-    public class ResourceDictionaryEx : CoreResourceDictionary, IDictionary {
+    public class ResourceDictionaryEx : CoreResourceDictionary {
 	    private static int s_nextId;
 		internal static readonly List<ResourceDictionaryEx> InitStack = new List<ResourceDictionaryEx>();
 		internal static readonly List<ResourceDictionaryEx> EndInitList = new List<ResourceDictionaryEx>();
 
+		internal static ResourceDictionaryEx LastRootDictionary { get; private set; }
+		internal static List<WeakReference<ResourceDictionaryEx>> RootDictionaries{get;} = new List<WeakReference<ResourceDictionaryEx>>();
 	    private protected static RdTrace Trace = new RdTrace();
 
-	    private bool _tempAdded;
 	    private bool _onGettingValueInvoked;
-
 	    private ThemeResourceDictionary _themeDictionary;
-	    private List<ResourceDictionary> _parents = new List<ResourceDictionary>();
 
 	    public ResourceDictionaryEx() {
 		    InstanceId = System.Threading.Interlocked.Increment(ref s_nextId);
+		    IsRootDictionary = InitStack.Count == 0;
+		    if (IsRootDictionary) {
+			    LastRootDictionary = this;
+			    RootDictionaries.Add(new WeakReference<ResourceDictionaryEx>(this));
+		    }
+		    else RootDictionary = LastRootDictionary;
 		    if (this is ThemeResourceDictionary) {
 			    if (ThemeResourceDictionary.Current != null && ThemeResourceDictionary.Current.IsInitializing) throw new InvalidOperationException("Only one ThemeResourceDictionary can be initialized at a time.");
 			    ThemeResourceDictionary.Current = (ThemeResourceDictionary)this;
@@ -39,6 +42,8 @@ namespace KsWare.Presentation.Resources.Core {
 	    }
 
 	    public int InstanceId { get; }
+	    public bool IsRootDictionary { get; }
+	    public ResourceDictionaryEx RootDictionary { get; set; }
 
 	    public TraceInfoData? TraceInfo {
 		    get => null;
@@ -66,9 +71,6 @@ namespace KsWare.Presentation.Resources.Core {
 	    }
 
 	    public string? Location { get; set; }
-
-	    public bool PreInit { get; set; }
-
 	    public bool EnableTrace { get => Trace.IsEnabled; set => Trace.SetIsEnabled(value, this); }
 	    public bool TraceValue { get; set; } = true;
 
@@ -76,6 +78,12 @@ namespace KsWare.Presentation.Resources.Core {
 		    if (!_onGettingValueInvoked) {
 			    _onGettingValueInvoked = true;
 			    Trace.Info($"{GetType().Name}({InstanceId}).OnGettingValue (first time)");
+		    }
+//		    if (IsRootDictionary && value.GetType().FullName == "System.Windows.Baml2006.KeyRecord") {
+//			    value = this[key]; // endless loop: calls OnGettingValue again with a KeyRecord
+//		    }
+		    if (IsRootDictionary && value.GetType().FullName == "System.Windows.Baml2006.KeyRecord") {
+			    value = TryFindResource(key, this, true, true)!;
 		    }
 		    
 			Trace.InfoIf(TraceValue, $"Read:{ResourceHelper.KeyToString(key)}");
@@ -85,6 +93,8 @@ namespace KsWare.Presentation.Resources.Core {
 			    case Style style: UpdateResourceInfo(style); break; // TODO PERFORMANCE
 		    }
 	    }
+
+	    
 
 	    public override void BeginInit() {
 		    IsInitializing = true;
@@ -107,14 +117,10 @@ namespace KsWare.Presentation.Resources.Core {
 		    Trace.Info($"{GetType().Name}({InstanceId}).EndInit", ("Location", Location), ("Source", Source), ("BaseUri",((IUriContext)this).BaseUri));
 		    EndInitList.Add(this);
 
-			// WORKAROUND for StaticResourceExtension, to make resources available immediately.
-//		     Application.Current.Resources.MergedDictionaries.Add(this);
-		    // _tempAdded = true;
-		    if (!(this is ThemeResourceDictionary) && ThemeResourceDictionary.Current != null) {
-//			    ThemeResourceDictionary.Current.AddTemporary(this);
-		    }
-
-//		    UpdateResourceInfo();
+//			possible fix for 'default style returns null'
+//			if(IsRootDictionary)
+//				foreach (var key in Keys.OfType<Type>().Where(k => typeof(FrameworkElement).IsAssignableFrom(k)))
+//					_ = this[key]; // force reading of default styles
 
 		    IsInitialized = true;
 	    }
@@ -143,16 +149,10 @@ namespace KsWare.Presentation.Resources.Core {
 	    }
 
 	    protected virtual void PostInit() {
-			if(_tempAdded) Application.Current.Resources.MergedDictionaries.Remove(this); // remove the temporary copy
 			Trace.Info($"{GetType().Name}({InstanceId}).PostInitialize", ("Location", Location), ("Source", Source));
 		    EndInitList.Remove(this);
 		    if (_themeDictionary != null) MergedDictionaries.Remove(_themeDictionary);
 		}
-
-		protected virtual void OnAddParent(ResourceDictionary resourceDictionary) {
-			
-		}
-
     }
 
 }
