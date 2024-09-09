@@ -32,6 +32,9 @@ namespace KsWare.Presentation.Resources.Core {
 		/// </summary>
 		/// <param name="resourceKey">The key identifier of the resource to be found.</param>
 		/// <returns>The found resource, or null if no resource with the provided key is found.</returns>
+		/// <remarks>Uses the same logic as in <see cref="FrameworkElement.TryFindResource">FrameworkElement.TryFindResource</see>, <see cref="Application.TryFindResource">Application.TryFindResource</see>.</remarks>
+		/// <seealso cref="FrameworkElement.TryFindResource"/>
+		/// <seealso cref="Application.TryFindResource"/>
 		public object? TryFindResource(object resourceKey) => TryFindResource(resourceKey, this);
 
 		protected static object? TryFindResource(object key, ResourceDictionary resourceDictionary, bool skipRdWithSource = false, bool skipCurrentKeys = false) {

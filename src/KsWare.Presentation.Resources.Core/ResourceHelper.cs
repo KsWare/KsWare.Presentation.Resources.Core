@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Xaml;
@@ -134,15 +135,41 @@ namespace KsWare.Presentation.Core.Utils {
 			return foundResourceDictionary!=null;
 		}
 
-		public static string KeyToString(object key) {
+		public static string? KeyToString(object? key, PropertyInfo? pi = null) {
 			switch (key) {
 				case null: return null;
 				case string s: return s;
 				case Type t: return $"{{x:Type {t.Name}}}";
-				case ComponentResourceKey crk: return crk.ToString();
-				case TemplateKey  tk: return tk.ToString();
-//				case ResourceKey rk: rk.ToString() // only the type name
+				case ComponentResourceKey crk: return componentResourceKey(crk);
+				//case TemplateKey  tk: return extend(tk.ToString()); 
+				case ResourceKey rk: return extend(rk.ToString()); // only the type name
 				case var o: return o.ToString();
+			}
+			return null;
+			string componentResourceKey(ComponentResourceKey crk) {
+				return
+					$"{{ComponentResourceKey TypeInTargetAssembly={{x:Type {crk.TypeInTargetAssembly.Name}}}, ResourceId={crk.ResourceId}}}";
+			}
+			string extend(string s) {
+				if (pi != null) return $"{{x:Static {pi.DeclaringType!.Name}.{pi.Name}}}";
+				return s;
+			}
+		}
+
+		public static string? KeyToXaml(object? key, PropertyInfo? pi = null) {
+			switch (key) {
+				case null: return null;
+				case string s: return s;
+				case Type t: return $"{{x:Type {t.Name}}}";
+				case ComponentResourceKey crk: return extend(crk.ToString());
+				case TemplateKey  tk: return extend(tk.ToString());
+				case ResourceKey rk: return extend(rk.ToString()); // only the type name
+				case var o: return o.ToString();
+			}
+
+			string extend(string s) {
+				if (pi != null) return $"{{x:Static {pi.DeclaringType.Name}.{pi.Name}}}";
+				return s;
 			}
 		}
 

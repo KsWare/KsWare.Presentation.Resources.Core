@@ -2,13 +2,13 @@
 using System.Diagnostics;
 using System.Text;
 
-namespace KsWare.Presentation.Resources.Core {
+namespace KsWare.Presentation.Resources.Core.Internal {
 
 	internal class RdTrace {
 
 		private ResourceDictionaryEx? _caller;
 
-		public bool IsEnabled { get; private set; } = true;
+		public bool IsEnabled { get; private set; }
 		public bool ToDebugOutput { get; set; } = true;
 		public bool ToConsoleOutput { get; set; }
 

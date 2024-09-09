@@ -3,14 +3,19 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
-using System.Windows.Documents;
 
 namespace KsWare.Presentation.Resources.Core {
 
+	// init
+	// ThemeLoader.RegisterTheme("Name", Uri);
+	// ThemeLoader.RegisterTheme("Alias", "Name");
+	// usage
+	// csharp: ThemeLoader.Load(<theme-uri>|<theme-alias>)
+	// xaml: <Window ThemeLoader.Source=<theme-uri>|<theme-alias>
+
 	public static class ThemeLoader {
 
-		private static Dictionary<string, Uri> s_themes = new Dictionary<string, Uri>();
-
+		private static readonly Dictionary<string, Uri> s_themes = new Dictionary<string, Uri>(StringComparer.OrdinalIgnoreCase);
 		private static EventHandler? s_initializeFnc;
 
 		public static readonly DependencyProperty SourceProperty = DependencyProperty.RegisterAttached(
@@ -37,12 +42,8 @@ namespace KsWare.Presentation.Resources.Core {
 			o.EndInit();
 			element.Resources.MergedDictionaries.Insert(0,o);
 
-			if (newUri !=null ) {
-				if (!s_themes.TryGetValue(newUri.OriginalString, out var uri)) uri = newUri;
-				var trd = new ThemeResourceDictionary();
-				trd.BeginInit();
-				trd.Source = uri;
-				trd.EndInit();
+			if (newUri != null ) {
+				var trd = Load(newUri);
 				element.Resources.MergedDictionaries.Insert(1,trd);
 			}
 		}
@@ -80,10 +81,35 @@ namespace KsWare.Presentation.Resources.Core {
 		}
 
 		public static void RegisterTheme(string name, Uri uri) {
+			if (!uri.OriginalString.EndsWith(".xaml", StringComparison.OrdinalIgnoreCase)) {
+				if (!s_themes.TryGetValue(uri.OriginalString, out uri))
+					throw new ArgumentException("Alias not found.",nameof(uri));
+			}
 			s_themes[name] = uri;
 		}
-		public static void RegisterTheme(string name, string uri) {
-			s_themes[name] = new Uri(uri, uri.StartsWith("pack:")?UriKind.Absolute : UriKind.Relative);
+
+		public static void RegisterTheme(string name, string uri) 
+			=> RegisterTheme(name, new Uri(uri, uri.StartsWith("pack:")?UriKind.Absolute : UriKind.Relative));
+
+		public static ThemeResourceDictionary Load(string nameOrUri)
+			=> Load(new Uri(nameOrUri, nameOrUri.StartsWith("pack:") ? UriKind.Absolute : UriKind.Relative));
+
+		public static ThemeResourceDictionary Load(Uri uri) {
+			if (!s_themes.TryGetValue(uri.OriginalString, out var sourceUri)) sourceUri = uri;
+
+			var rd = new ThemeResourceDictionary();
+			rd.BeginInit();
+			rd.Source = sourceUri;
+			rd.EndInit();
+			return rd;
+		}
+
+		public static void UnregisterTheme(string name) {
+			s_themes.Remove(name);
+		}
+
+		public static void ClearRegistrations() {
+			s_themes.Clear();
 		}
 
 	}

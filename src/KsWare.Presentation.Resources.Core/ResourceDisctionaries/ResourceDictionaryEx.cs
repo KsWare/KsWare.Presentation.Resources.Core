@@ -6,6 +6,7 @@ using System.Windows;
 using System.Windows.Markup;
 using System.Windows.Threading;
 using KsWare.Presentation.Core.Utils;
+using KsWare.Presentation.Resources.Core.Internal;
 
 namespace KsWare.Presentation.Resources.Core {
 
@@ -72,7 +73,7 @@ namespace KsWare.Presentation.Resources.Core {
 
 	    public string? Location { get; set; }
 	    public bool EnableTrace { get => Trace.IsEnabled; set => Trace.SetIsEnabled(value, this); }
-	    public bool TraceValue { get; set; } = true;
+	    public bool TraceValue { get; set; }
 
 	    protected override void OnGettingValue(object key, ref object value, out bool canCache) {
 		    if (!_onGettingValueInvoked) {
@@ -93,8 +94,6 @@ namespace KsWare.Presentation.Resources.Core {
 			    case Style style: UpdateResourceInfo(style); break; // TODO PERFORMANCE
 		    }
 	    }
-
-	    
 
 	    public override void BeginInit() {
 		    IsInitializing = true;

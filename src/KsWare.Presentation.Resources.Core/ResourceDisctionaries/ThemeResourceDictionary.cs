@@ -113,6 +113,10 @@ namespace KsWare.Presentation.Resources.Core {
 			if (_tempMerged == null) return;
 			_tempMerged.MergedDictionaries.Remove(resourceDictionary);
 		}
+
+		public static ThemeResourceDictionary Load(string theme) 
+			=> ThemeLoader.Load(theme);
+
 	}
 
 }
