@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Windows;
+using System.Xml.Linq;
 
 namespace KsWare.Presentation.Resources.Core {
 
@@ -15,8 +16,10 @@ namespace KsWare.Presentation.Resources.Core {
 
 	public static class ThemeLoader {
 
-		private static readonly Dictionary<string, Uri> s_themes = new Dictionary<string, Uri>(StringComparer.OrdinalIgnoreCase);
+		private static StartupEventHandler? s_appStartupFnc;
 		private static EventHandler? s_initializeFnc;
+		private static Uri? s_applicationTheme;
+		private static readonly Dictionary<string, Uri> s_themes = new Dictionary<string, Uri>(StringComparer.OrdinalIgnoreCase);
 
 		public static readonly DependencyProperty SourceProperty = DependencyProperty.RegisterAttached(
 			"Source", typeof(Uri), typeof(ThemeLoader), new FrameworkPropertyMetadata(default(Uri),OnSourceChanged));
@@ -48,6 +51,24 @@ namespace KsWare.Presentation.Resources.Core {
 			}
 		}
 
+		private static void InitializeResources(Application app, Uri newUri, Uri oldUri) {
+			if (s_appStartupFnc != null) app.Startup -= s_appStartupFnc;
+			var overrides = CollectOverridesAndRemove(app.Resources, oldUri);
+
+			var o = new ResourceDictionary();
+			o.BeginInit();
+			foreach (var d in overrides) o.Add(d.Key, d.Value);
+			o.EndInit();
+			app.Resources.MergedDictionaries.Insert(0,o);
+
+			if (newUri != null ) {
+				//TODO styles will be sealed, disable deferred initialization
+				var trd = Load(newUri);
+				app.Resources.MergedDictionaries.Insert(1,trd);
+			}
+			s_applicationTheme = newUri;
+		}
+
 		private static List<DictionaryEntry> CollectOverridesAndRemove(ResourceDictionary resourceDictionary, Uri oldThemeUri) {
 			var overridesList = new List<DictionaryEntry>();
 			collectAndRemove(resourceDictionary);
@@ -72,12 +93,24 @@ namespace KsWare.Presentation.Resources.Core {
 			}
 		}
 		
-		public static void SetSource(FrameworkElement element, Uri value) {
-			element.SetValue(SourceProperty, value);
+		public static void SetSource(object obj, Uri value) {
+			if (obj is FrameworkElement fe) fe.SetValue(SourceProperty, value);
+			else if (obj is Application app) {
+				var fnc = new StartupEventHandler((s, _) => InitializeResources((Application)s, value, s_applicationTheme));
+				if (app.MainWindow == null) {
+					s_appStartupFnc = fnc;
+					app.Startup += s_appStartupFnc;
+					return;
+				}
+				fnc(app, null);
+			}
+			else throw new InvalidOperationException($"ThemeLoader is not supported for objects of type '{obj.GetType().Name}'.");
 		}
 
-		public static Uri GetSource(FrameworkElement element) {
-			return (Uri) element.GetValue(SourceProperty);
+		public static Uri GetSource(object obj) {
+			if (obj is FrameworkElement fe) return (Uri) fe.GetValue(SourceProperty);
+			if (obj is Application app) return s_applicationTheme;
+			throw new InvalidOperationException($"ThemeLoader is not supported for objects of type '{obj.GetType().Name}'.");
 		}
 
 		public static void RegisterTheme(string name, Uri uri) {

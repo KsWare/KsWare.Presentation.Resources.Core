@@ -137,6 +137,7 @@ namespace KsWare.Presentation.Resources.Core {
 	    }
 
 	    private void UpdateResourceInfo(Style style) {
+			if(style.IsSealed) return;
 		    var info = style.Setters.FirstOrDefault(s => s is InfoSetter ss && ss.Property==ResourceInfo.StyleLocationProperty);
 			if(info!=null) return;
 			info = new InfoSetter() {
@@ -144,7 +145,6 @@ namespace KsWare.Presentation.Resources.Core {
 				Value = ((IUriContext) this).BaseUri?.ToString() ?? Source?.ToString() ?? Location
 			};
 			style.Setters.Insert(0,info);
-
 	    }
 
 	    protected virtual void PostInit() {
