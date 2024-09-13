@@ -51,6 +51,7 @@
 
 	<PropertyGroup>
 		<LocalNugetDirectory>D:\Develop\Local\Nuget</LocalNugetDirectory>
+		<PackageRequireLicenseAcceptance>True</PackageRequireLicenseAcceptance>
 	</PropertyGroup>	
 	<Target Name="CopyNuGetPackages" AfterTargets="Pack" Condition="Exists('$(LocalNugetDirectory)')">
 		<ItemGroup>

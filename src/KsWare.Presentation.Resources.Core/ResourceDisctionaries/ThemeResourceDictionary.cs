@@ -115,7 +115,7 @@ namespace KsWare.Presentation.Resources.Core {
 		}
 
 		public static ThemeResourceDictionary Load(string theme) 
-			=> ThemeLoader.Load(theme);
+			=> ThemeManager.Load(theme);
 
 	}
 
